@@ -9,7 +9,10 @@ import { Ingredient } from "./ingredient.model";
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
-  constructor(private http: HttpClient, private recipeService: RecipeService, private slService: ShoppingListService) {}
+  constructor(
+    private http: HttpClient,
+    private recipeService: RecipeService,
+    private slService: ShoppingListService) {}
 
   storeRecipes() {
     const recipes = this.recipeService.getRecipes();
@@ -58,16 +61,7 @@ export class DataStorageService {
     return this.http
       .get<Ingredient[]>(
         'https://recipes-book-6087b-default-rtdb.firebaseio.com//ingredients.json')
-      .pipe(
-        // map(ingredients => {
-        //   return ingredients.map(ingredient => {
-        //     return {
-        //       ...ingredient,
-        //       ingredients: recipe.ingredients ? recipe.ingredients : []
-        //     };
-        //   });
-        // }),
-        tap(ingredients => {
+      .pipe(tap(ingredients => {
           this.slService.setIngredients(ingredients);
         })
       )

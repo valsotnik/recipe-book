@@ -11,7 +11,7 @@
         <li routerLinkActive="active" *ngIf="!isAuthenticated">
           <a style="cursor: pointer;" routerLink="/auth">Authenticate</a>
         </li>
-        <li routerLinkActive="active">
+        <li routerLinkActive="active" *ngIf="isAuthenticated">
           <a style="cursor: pointer;" routerLink="/shopping-list">Shopping List</a>
         </li>
       </ul>

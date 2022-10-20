@@ -4,6 +4,7 @@ import { RouterModule } from "@angular/router";
 import { SharedModule } from "../shared/shared.module";
 import { ShoppingListComponent } from "./shopping-list.component";
 import { ShoppingEditComponent } from "./shopping-edit/shopping-edit.component";
+import { AuthGuard } from "../auth/auth.guard";
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { ShoppingEditComponent } from "./shopping-edit/shopping-edit.component";
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild([
-      { path: '', component: ShoppingListComponent }
+      { path: '', component: ShoppingListComponent, canActivate: [AuthGuard] }
     ])
   ],
 })
