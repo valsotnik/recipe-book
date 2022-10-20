@@ -4,10 +4,12 @@ import { map, tap } from 'rxjs/operators';
 
 import { Recipe } from '../recipes/recipe.model';
 import { RecipeService } from '../recipes/recipe.service';
+import { ShoppingListService } from "../shopping-list/shopping-list.service";
+import { Ingredient } from "./ingredient.model";
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
-  constructor(private http: HttpClient, private recipeService: RecipeService) {}
+  constructor(private http: HttpClient, private recipeService: RecipeService, private slService: ShoppingListService) {}
 
   storeRecipes() {
     const recipes = this.recipeService.getRecipes();
@@ -15,6 +17,18 @@ export class DataStorageService {
       .put(
         'https://recipes-book-6087b-default-rtdb.firebaseio.com//recipes.json',
         recipes
+      )
+      .subscribe(response => {
+        console.log(response);
+      });
+  }
+
+  storeIngredients() {
+    const ingredients = this.slService.getIngredients();
+    this.http
+      .put(
+        'https://recipes-book-6087b-default-rtdb.firebaseio.com//ingredients.json',
+        ingredients
       )
       .subscribe(response => {
         console.log(response);
@@ -38,5 +52,24 @@ export class DataStorageService {
         this.recipeService.setRecipes(recipes);
       })
     )
+  }
+
+  fetchIngredients() {
+    return this.http
+      .get<Ingredient[]>(
+        'https://recipes-book-6087b-default-rtdb.firebaseio.com//ingredients.json')
+      .pipe(
+        // map(ingredients => {
+        //   return ingredients.map(ingredient => {
+        //     return {
+        //       ...ingredient,
+        //       ingredients: recipe.ingredients ? recipe.ingredients : []
+        //     };
+        //   });
+        // }),
+        tap(ingredients => {
+          this.slService.setIngredients(ingredients);
+        })
+      )
   }
 }
