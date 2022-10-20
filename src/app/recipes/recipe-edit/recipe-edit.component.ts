@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
+import { FormGroup, FormControl, FormArray, Validators, FormBuilder } from '@angular/forms';
 
 import { RecipeService } from '../recipe.service';
 
@@ -11,13 +11,14 @@ import { RecipeService } from '../recipe.service';
 })
 export class RecipeEditComponent implements OnInit {
   id!: number;
-  editMode = false;
+  editMode: boolean = false;
   recipeForm!: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
     private recipeService: RecipeService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -41,12 +42,12 @@ export class RecipeEditComponent implements OnInit {
 
   onAddIngredient() {
     (<FormArray>this.recipeForm.get('ingredients')).push(
-      new FormGroup({
-        name: new FormControl(null, Validators.required),
-        amount: new FormControl(null, [
+      this.fb.group({
+        name: [null, Validators.required],
+        amount: [null, [
           Validators.required,
           Validators.pattern(/^[1-9]+[0-9]*$/)
-        ])
+        ]]
       })
     );
   }
@@ -74,23 +75,22 @@ export class RecipeEditComponent implements OnInit {
         for (let ingredient of recipe.ingredients) {
           recipeIngredients.push(
             // @ts-ignore
-            new FormGroup({
-              name: new FormControl(ingredient.name, Validators.required),
-              amount: new FormControl(ingredient.amount, [
+            this.fb.group({
+              name: [ingredient.name, Validators.required],
+              amount: [ingredient.amount, [
                 Validators.required,
                 Validators.pattern(/^[1-9]+[0-9]*$/)
-              ])
+              ]]
             })
           );
         }
       }
     }
-
-    this.recipeForm = new FormGroup({
-      name: new FormControl(recipeName, Validators.required),
-      imagePath: new FormControl(recipeImagePath, Validators.required),
-      description: new FormControl(recipeDescription, Validators.required),
+    this.recipeForm = this.fb.group({
+      name: [recipeName, Validators.required],
+      imagePath: [recipeImagePath, Validators.required],
+      description: [recipeDescription, Validators.required],
       ingredients: recipeIngredients
-    });
+    })
   }
 }
