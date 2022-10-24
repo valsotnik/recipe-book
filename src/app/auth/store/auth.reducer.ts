@@ -3,10 +3,14 @@ import * as AuthActions from "./auth.actions";
 
 export interface State {
   user: User;
+  authError: string;
+  loading: boolean
 }
 
 const initialState = {
   user: null,
+  authError: '',
+  loading: false
 }
 
 export function authReducer(state = initialState, action: AuthActions.AuthActions) {
@@ -19,7 +23,22 @@ export function authReducer(state = initialState, action: AuthActions.AuthAction
         action.payload.expirationDate);
       return {
         ...state,
-        user: user
+        authError: '',
+        user: user,
+        loading: false
+      }
+    case AuthActions.LOGIN_START:
+      return {
+        ...state,
+        authError: '',
+        loading: true
+      }
+    case AuthActions.LOGIN_FAIL:
+      return {
+        ...state,
+        user: null,
+        authError: action.payload,
+        loading: false
       }
     case AuthActions.LOGOUT:
       return {
